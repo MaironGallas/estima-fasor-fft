@@ -1,0 +1,11 @@
+language: python
+python:
+  - 3.9
+install:
+  - pip install -q pipenv
+  - pipenv sync --dev
+script:
+  - pipenv run flake8
+  - pipenv run pytest libpythonpro --cov=libpythonpro/test_spam
+after_success:
+  - pipenv run codecov
