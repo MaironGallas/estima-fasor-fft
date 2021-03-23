@@ -1,6 +1,8 @@
 import pytest
-from estima_fasor_fft.estimador.criar_fasor import Fasor
+from estima_fasor_fft.estimador.criar_fasor import Fasor, Fourier
 from estima_fasor_fft.estimador.criar_sinal import SinalTeste
+import matplotlib.pyplot as plt
+
 
 class TransfomadaFourie():
     def __init__(self, amostragem, frequencia):
@@ -27,15 +29,28 @@ class TransfomadaFourie():
 
 @pytest.mark.parametrize(
     'frequencia',
-    [60, 128]
+    [60, 180]
 )
 def test_criar_sinal(frequencia):
-    sinal = SinalTeste(128, frequencia)
+    amplitude = 10
+    amostragem = 128
+
+    sinal = SinalTeste(amplitude, amostragem, frequencia)
     sinal.criar_sinal()
+    assert sinal.amostragem == 128
 
 def test_modulo_fasor():
-    sinal = SinalTeste(128, 60)
+    amplitude = 10
+    amostragem = 128
+    frequencia  = 60
+
+    sinal = SinalTeste(amplitude, amostragem, frequencia)
     sinal.criar_sinal()
-    fasor = Fasor(sinal)
-    fasor.fft()
+
+    fft_cfg = Fourier(sinal) # Configurações do Fourier
+    fasor = Fasor(fft_cfg)
+    fasor.estima_modulo()
+
+    assert (fasor.modulo[0] == amplitude)
+
 
