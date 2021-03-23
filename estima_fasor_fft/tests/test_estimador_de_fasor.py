@@ -40,20 +40,22 @@ def test_criar_sinal(frequencia):
     sinal.criar_sinal()
     assert sinal.amostragem == 128
 
+
 def test_modulo_fasor():
     amplitude = 10
     amostragem = 128
-    frequencia  = 60
+    frequencia = 60
     defasagem = 0
 
     sinal = SinalTeste(amplitude, defasagem, amostragem, frequencia)
     sinal.criar_sinal()
 
-    fft_cfg = Fourier(sinal) # Configurações do Fourier
+    fft_cfg = Fourier(sinal)  # Configurações do Fourier
     fasor = Fasor(fft_cfg)
     fasor.estimar()
 
     assert (fasor.modulo[0] == amplitude)
+
 
 def test_angulo_fasor():
     amplitude = 10
@@ -64,9 +66,7 @@ def test_angulo_fasor():
     sinal = SinalTeste(amplitude, defasagem, amostragem, frequencia)
     sinal.criar_sinal()
 
-    fft_cfg = Fourier(sinal) #Configurações do Fourier
+    fft_cfg = Fourier(sinal)  # Configurações do Fourier
     fasor = Fasor(fft_cfg)
     fasor.estimar()
-    assert (fasor.fase[0]<90.1 and fasor.fase[0]>89.8)
-
-
+    assert (fasor.fase[0] < 90.1 and fasor.fase[0] > 89.8)

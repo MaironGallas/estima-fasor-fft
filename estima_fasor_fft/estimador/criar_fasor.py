@@ -46,7 +46,6 @@ class Fasor():
             self.modulo[i - self.fft.amostragem] = np.sqrt(fftr * fftr + (ffti * ffti))
             self.fase[i - self.fft.amostragem] = self.calcular_angulo(ffta, ffta_ref)
 
-
     def calcular_angulo(self, ffta, ref_angulo):
         x = ffta - 90
         if x <= -180:
