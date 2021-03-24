@@ -51,14 +51,14 @@ class Fasor():
         if x <= -180:
             x = x + 360
 
-        xRef = ref_angulo - 90
-        if xRef <= -180:
-            xRef = xRef + 360
+        xref = ref_angulo - 90
+        if xref <= -180:
+            xref = xref + 360
 
-        while xRef <= -180:
-            xRef = xRef + 360
+        while xref <= -180:
+            xref = xref + 360
 
-        angulo = x - xRef
+        angulo = x - xref
 
         if angulo >= 180:
             angulo = angulo - 360
