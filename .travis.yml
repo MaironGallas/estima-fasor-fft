@@ -6,6 +6,6 @@ install:
   - pipenv sync --dev
 script:
   - pipenv run flake8
-  - pipenv run pytest libpythonpro --cov=libpythonpro/test_spam
+  - pipenv run pytest estima_fasor_fft --cov=estima_fasor_fft/tests
 after_success:
   - pipenv run codecov
