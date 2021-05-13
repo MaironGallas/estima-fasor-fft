@@ -1,15 +1,15 @@
 import math
-
 import numpy as np
 
 
 class Fourier():
-    def __init__(self, sinal):
-        self.frequencia = 60
-        self.amostragem = 128
+    def __init__(self, sinal, frequencia):
+        self.cfc_lista = []
+        self.cfs_lista = []
+        self.frequencia = frequencia
         self.sinal = sinal
-        self.janela_de_amostras = np.arange(0, self.amostragem, 1)
-
+        self.janela_de_amostras = np.arange(0, self.sinal.taxa_amostragem, 1)
+        self.taxa_amostragem = self.sinal.taxa_amostragem
         self.cria_referencia()
         self.cria_coef_sin_cos()
 
@@ -18,35 +18,45 @@ class Fourier():
         self.ref = np.sin(angle)
 
     def cria_coef_sin_cos(self):
-        angle = (2 * np.pi / self.amostragem) * self.janela_de_amostras
-        self.cfc = np.cos(angle)
-        self.cfs = - np.sin(angle)
+        for harmonica in range(1, 10, 1):
+            angle = (2 * np.pi * harmonica / self.sinal.taxa_amostragem) * self.janela_de_amostras #Multiplicar no pi pelo numero de harmonica
+            cfc = np.cos(angle)
+            cfs = - np.sin(angle)
+            self.cfc_lista.append(np.copy(cfc))
+            self.cfs_lista.append(np.copy(cfs))
 
 
 class Fasor():
     def __init__(self, fft):
         self.fft = fft
-        self.modulo = np.zeros((len(self.fft.sinal.dados) - self.fft.amostragem, 1))
-        self.fase = np.zeros((len(self.fft.sinal.dados) - self.fft.amostragem, 1))
+        self.modulo = []
+        self.fase = []
 
     def estimar(self):
+        modulo = np.zeros((len(self.fft.sinal.sinal) - self.fft.taxa_amostragem, 1))
+        fase = np.zeros((len(self.fft.sinal.sinal) - self.fft.taxa_amostragem, 1))
 
-        CONSTANTE = (2/self.fft.amostragem)
+        CONSTANTE = (2/self.fft.taxa_amostragem)
 
-        for i in range(self.fft.amostragem, len(self.fft.sinal.dados), 1):
-            fftr = (np.sum(self.fft.sinal.dados[i - self.fft.amostragem:i] * self.fft.cfc))*CONSTANTE
-            ffti = (np.sum(self.fft.sinal.dados[i - self.fft.amostragem:i] * self.fft.cfs))*CONSTANTE
+        for indice_harmonica in range(0, 9, 1):
+            harmonica = indice_harmonica + 1
+            for i in range(self.fft.taxa_amostragem, len(self.fft.sinal.sinal), 1):
+                fftr = (np.sum(self.fft.sinal.sinal[i - self.fft.taxa_amostragem:i] * self.fft.cfc_lista[indice_harmonica]))*CONSTANTE
+                ffti = (np.sum(self.fft.sinal.sinal[i - self.fft.taxa_amostragem:i] * self.fft.cfs_lista[indice_harmonica]))*CONSTANTE
 
-            fftr_ref = (np.sum(self.fft.ref[i - self.fft.amostragem:i] * self.fft.cfc))*CONSTANTE
-            ffti_ref = (np.sum(self.fft.ref[i - self.fft.amostragem:i] * self.fft.cfs))*CONSTANTE
+                fftr_ref = (np.sum(self.fft.ref[i - self.fft.taxa_amostragem:i] * self.fft.cfc_lista[indice_harmonica]))*CONSTANTE
+                ffti_ref = (np.sum(self.fft.ref[i - self.fft.taxa_amostragem:i] * self.fft.cfs_lista[indice_harmonica]))*CONSTANTE
 
-            ffta = math.atan2(ffti, fftr) * 57.295779
-            ffta_ref = math.atan2(ffti_ref, fftr_ref) * 57.295779
+                ffta = math.atan2(ffti, fftr) * 57.295779
+                ffta_ref = math.atan2(ffti_ref, fftr_ref) * 57.295779
 
-            self.modulo[i - self.fft.amostragem] = np.sqrt(fftr * fftr + (ffti * ffti))
-            self.fase[i - self.fft.amostragem] = self.calcular_angulo(ffta, ffta_ref)
+                modulo[i - self.fft.taxa_amostragem] = np.sqrt(fftr * fftr + (ffti * ffti))
+                fase[i - self.fft.taxa_amostragem] = self.calcular_angulo(ffta, ffta_ref, harmonica)
 
-    def calcular_angulo(self, ffta, ref_angulo):
+            self.modulo.append(np.copy(modulo))
+            self.fase.append(np.copy(fase))
+
+    def calcular_angulo(self, ffta, ref_angulo, harmonica):
         x = ffta - 90
         if x <= -180:
             x = x + 360
@@ -55,8 +65,13 @@ class Fasor():
         if xref <= -180:
             xref = xref + 360
 
+        xref = xref*harmonica
+
         while xref <= -180:
             xref = xref + 360
+
+        while xref >= 180:
+            xref = xref - 360
 
         angulo = x - xref
 

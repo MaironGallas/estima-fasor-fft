@@ -1,19 +1,23 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
-class SinalTeste():
-    def __init__(self, amplitude, defasagem, amostragem, frequencia):
-        self.defasagem = defasagem
-        self.amplitude = amplitude
-        self.amostragem = amostragem
-        self.frequencia = frequencia
+class Sinal():
+    def __init__(self, taxa_amostragem, frequencia_rede):
+        self.taxa_amostragem = taxa_amostragem
+        self.time = np.arange(0, 10*(1/frequencia_rede), (1/frequencia_rede)/self.taxa_amostragem)
+        self.sinal = np.zeros((len(self.time), 1)).flatten()
 
-    def criar_sinal(self):
-        self.time = np.arange(0, 2 * 1 / self.frequencia, (1 / self.frequencia) / self.amostragem)
-        self.dados = self.amplitude * np.sin((2 * np.pi * self.frequencia * self.time) + self.defasagem)
+    def criar_sinal(self, amplitudes, defasagens, frequencias):
+        for amplitude, defasagem, frequencia in zip(amplitudes, defasagens, frequencias):
+            sinal = amplitude*np.sin((2*np.pi*frequencia*self.time) + defasagem)
+            self.sinal = self.sinal+sinal
 
-    def criar_sinal_duas_frequencias(self):
-        self.time = np.arange(0, 2 * 1 / self.frequencia, (1 / self.frequencia) / self.amostragem)
-        self.dados = self.amplitude * np.sin((2 * np.pi * self.frequencia * self.time) + self.defasagem) + (
-            (self.amplitude / 2) * np.sin((2 * np.pi * self.frequencia * 3 * self.time))
-        )
+    def sinal_plot(self):
+        if not self.sinal.max() == 0:
+            figura = plt.figure()
+            plt.plot(self.sinal)
+            plt.show()
+            return figura
+        else:
+            return "O sinal ainda não existe"
