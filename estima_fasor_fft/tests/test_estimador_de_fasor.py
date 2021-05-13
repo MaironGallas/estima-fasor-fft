@@ -70,4 +70,3 @@ def test_criar_conf_fft_e_fasor(sinal):
     assert 25.001 > fasor.modulo[1][0] > 24.999
     assert 5.001 > fasor.modulo[2][0] > 4.999
     assert (90.1 > fasor.fase[0][0] > 89.8)
-
